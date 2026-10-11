@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salas de Encontro — Daggerheart</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topo">
+  <div>
+    <h1>Salas de Encontro</h1>
+    <p class="sub">Tabela de 2d20 por patamar para Daggerheart</p>
+  </div>
+  <nav class="abas" role="tablist">
+    <button role="tab" data-aba="tabela" aria-selected="true">Tabela</button>
+    <button role="tab" data-aba="encontros" aria-selected="false">Encontros</button>
+    <button role="tab" data-aba="patamares" aria-selected="false">Regras</button>
+    <button role="tab" data-aba="foundry" aria-selected="false">Foundry</button>
+    <button role="tab" data-aba="dados" aria-selected="false">Dados</button>
+  </nav>
+</header>
+
+<main>
+  <!-- TABELA -->
+  <section id="aba-tabela" class="aba">
+    <div class="barra nao-imprimir">
+      <div class="seletor-patamar" id="seletor-patamar" role="group" aria-label="Patamar"></div>
+      <label class="campo-inline">Personagens
+        <input type="number" id="jogadores" min="1" max="8">
+      </label>
+      <button id="imprimir" class="secundario">Imprimir</button>
+    </div>
+
+    <div class="ref" id="ref-patamar"></div>
+
+    <div class="rolagem nao-imprimir">
+      <div class="dados">
+        <label class="dado esperanca">Esperança
+          <input type="number" id="d-esp" min="1" max="20" inputmode="numeric" placeholder="–">
+        </label>
+        <span class="mais">+</span>
+        <label class="dado medo">Medo
+          <input type="number" id="d-medo" min="1" max="20" inputmode="numeric" placeholder="–">
+        </label>
+        <button id="rolar">Rolar 2d20</button>
+      </div>
+      <p class="dica">Rolou na mesa? Digite os dois valores acima.</p>
+      <div id="resultado" class="resultado" aria-live="polite" hidden></div>
+    </div>
+
+    <h2 id="titulo-tabela"></h2>
+    <div id="aviso-tabela" class="aviso" hidden></div>
+    <div class="rolavel">
+      <table class="tabela" id="tabela">
+        <thead><tr><th>2d20</th><th>Sala</th><th>Tipo</th><th class="num">Chance</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="regras" id="regras-patamar"></div>
+  </section>
+
+  <!-- ENCONTROS -->
+  <section id="aba-encontros" class="aba" hidden>
+    <form id="form-enc" class="cartao">
+      <h2 id="form-titulo">Novo encontro</h2>
+      <div class="grade">
+        <label>Nome
+          <input type="text" id="f-nome" required maxlength="80">
+        </label>
+        <label>Tipo
+          <select id="f-tipo"></select>
+        </label>
+        <label>Peso (%)
+          <input type="number" id="f-peso" min="0" step="0.5" required>
+        </label>
+      </div>
+      <label>Descrição
+        <textarea id="f-desc" rows="3"></textarea>
+      </label>
+      <fieldset class="checks">
+        <legend>Patamares</legend>
+        <label><input type="checkbox" name="f-pat" value="1"> 1º</label>
+        <label><input type="checkbox" name="f-pat" value="2"> 2º</label>
+        <label><input type="checkbox" name="f-pat" value="3"> 3º</label>
+        <label><input type="checkbox" name="f-pat" value="4"> 4º</label>
+      </fieldset>
+      <div class="acoes">
+        <button type="submit" id="f-salvar">Adicionar</button>
+        <button type="button" id="f-cancelar" class="secundario" hidden>Cancelar</button>
+      </div>
+    </form>
+
+    <div class="barra">
+      <label class="campo-inline">Mostrar
+        <select id="filtro-pat">
+          <option value="0">Todos os patamares</option>
+          <option value="1">1º patamar</option>
+          <option value="2">2º patamar</option>
+          <option value="3">3º patamar</option>
+          <option value="4">4º patamar</option>
+        </select>
+      </label>
+      <span id="resumo-enc" class="dica"></span>
+    </div>
+    <p class="dica">O peso é relativo aos outros encontros do mesmo patamar. Como 2d20 somados formam uma curva, a chance real é a mais próxima possível do pedido; escolha um patamar para ver as duas.</p>
+    <div class="rolavel">
+      <table class="tabela" id="lista-enc">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- REGRAS POR PATAMAR -->
+  <section id="aba-patamares" class="aba" hidden>
+    <div class="cartao">
+      <h2>Como rolar</h2>
+      <p>Role 2d20, um como <strong class="t-esp">dado de Esperança</strong> e outro como <strong class="t-medo">dado de Medo</strong>. A soma define a sala. O dado mais alto define como o grupo entra nela, e o efeito muda com o patamar:</p>
+      <ul>
+        <li><strong class="t-esp">Esperança maior</strong> (47,5%): a sala favorece o grupo.</li>
+        <li><strong class="t-medo">Medo maior</strong> (47,5%): a sala favorece o mestre.</li>
+        <li><strong>Dados iguais</strong> (5%): crítico.</li>
+      </ul>
+      <p class="dica">Os textos abaixo são uma regra da casa; edite à vontade. Orçamento de combate, Dificuldade, dano e limiares seguem o livro básico.</p>
+    </div>
+    <div id="editor-patamares"></div>
+    <div class="cartao">
+      <h2>Ordem das faixas</h2>
+      <label class="campo-inline">
+        <select id="ordem">
+          <option value="piramide">Raros nas pontas, comuns no meio</option>
+          <option value="lista">Na ordem do cadastro</option>
+        </select>
+      </label>
+      <p class="dica">Em 2d20 as somas do meio (perto de 21) saem muito mais que as das pontas. Deixar os raros nas pontas é o que mais aproxima a chance real do peso pedido.</p>
+    </div>
+  </section>
+
+  <!-- FOUNDRY -->
+  <section id="aba-foundry" class="aba" hidden>
+    <div class="cartao">
+      <h2>Macro para o Foundry</h2>
+      <ol>
+        <li>No Foundry, crie uma macro do tipo <strong>Script</strong> e cole o código abaixo.</li>
+        <li>Execute como mestre. Ela cria uma Tabela de Rolagem <code>2d20</code> por patamar na pasta “Salas de Encontro” e a macro <strong>Rolar Sala de Encontro</strong>.</li>
+        <li>Use a macro criada para rolar: ela mostra a sala e o efeito de Esperança/Medo no chat.</li>
+      </ol>
+      <p class="dica">Executar de novo substitui as tabelas de mesmo nome dentro dessa pasta.</p>
+      <fieldset class="checks">
+        <legend>Patamares a exportar</legend>
+        <label><input type="checkbox" name="x-pat" value="1" checked> 1º</label>
+        <label><input type="checkbox" name="x-pat" value="2" checked> 2º</label>
+        <label><input type="checkbox" name="x-pat" value="3" checked> 3º</label>
+        <label><input type="checkbox" name="x-pat" value="4" checked> 4º</label>
+      </fieldset>
+      <label class="check-linha"><input type="checkbox" id="x-sussurro" checked> Resultado visível só para o mestre</label>
+      <div class="acoes">
+        <button id="copiar-macro">Copiar macro</button>
+        <button id="baixar-macro" class="secundario">Baixar .js</button>
+        <span id="msg-macro" class="dica" aria-live="polite"></span>
+      </div>
+      <textarea id="macro" rows="18" readonly spellcheck="false"></textarea>
+    </div>
+  </section>
+
+  <!-- DADOS -->
+  <section id="aba-dados" class="aba" hidden>
+    <div class="cartao">
+      <h2>Seus dados</h2>
+      <p id="estado-dados"></p>
+      <p>As alterações ficam salvas só neste navegador. Para publicá-las no GitHub Pages, baixe o <code>dados.js</code> e substitua o arquivo de mesmo nome na pasta <code>docs/</code>.</p>
+      <div class="acoes">
+        <button id="baixar-dados">Baixar dados.js</button>
+        <label class="botao secundario">Importar arquivo
+          <input type="file" id="importar" accept=".js,.json,application/json,text/javascript" hidden>
+        </label>
+        <button id="restaurar" class="perigo">Descartar alterações locais</button>
+      </div>
+      <p id="msg-dados" class="dica" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="nao-imprimir">
+  <p>Ferramenta de fã, sem vínculo com a Darrington Press. Os nomes de adversários remetem ao livro básico de Daggerheart; as fichas não são reproduzidas aqui.</p>
+</footer>
+
+<script src="dados.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
