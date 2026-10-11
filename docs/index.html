@@ -10,7 +10,7 @@
 <header class="topo">
   <div>
     <h1>Salas de Encontro</h1>
-    <p class="sub">Tabela de 2d20 por patamar para Daggerheart</p>
+    <p class="sub">Tabela de 2d12 por patamar para Daggerheart</p>
   </div>
   <nav class="abas" role="tablist">
     <button role="tab" data-aba="tabela" aria-selected="true">Tabela</button>
@@ -37,13 +37,13 @@
     <div class="rolagem nao-imprimir">
       <div class="dados">
         <label class="dado esperanca">Esperança
-          <input type="number" id="d-esp" min="1" max="20" inputmode="numeric" placeholder="–">
+          <input type="number" id="d-esp" min="1" max="12" inputmode="numeric" placeholder="–">
         </label>
         <span class="mais">+</span>
         <label class="dado medo">Medo
-          <input type="number" id="d-medo" min="1" max="20" inputmode="numeric" placeholder="–">
+          <input type="number" id="d-medo" min="1" max="12" inputmode="numeric" placeholder="–">
         </label>
-        <button id="rolar">Rolar 2d20</button>
+        <button id="rolar">Rolar 2d12</button>
       </div>
       <p class="dica">Rolou na mesa? Digite os dois valores acima.</p>
       <div id="resultado" class="resultado" aria-live="polite" hidden></div>
@@ -53,7 +53,7 @@
     <div id="aviso-tabela" class="aviso" hidden></div>
     <div class="rolavel">
       <table class="tabela" id="tabela">
-        <thead><tr><th>2d20</th><th>Sala</th><th>Tipo</th><th class="num">Chance</th></tr></thead>
+        <thead><tr><th>2d12</th><th>Sala</th><th>Tipo</th><th class="num">Chance</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -104,7 +104,7 @@
       </label>
       <span id="resumo-enc" class="dica"></span>
     </div>
-    <p class="dica">O peso é relativo aos outros encontros do mesmo patamar. Como 2d20 somados formam uma curva, a chance real é a mais próxima possível do pedido; escolha um patamar para ver as duas.</p>
+    <p class="dica">O peso é relativo aos outros encontros do mesmo patamar. Como 2d12 somados formam uma curva, a chance real é a mais próxima possível do pedido; escolha um patamar para ver as duas.</p>
     <div class="rolavel">
       <table class="tabela" id="lista-enc">
         <thead></thead>
@@ -117,11 +117,11 @@
   <section id="aba-patamares" class="aba" hidden>
     <div class="cartao">
       <h2>Como rolar</h2>
-      <p>Role 2d20, um como <strong class="t-esp">dado de Esperança</strong> e outro como <strong class="t-medo">dado de Medo</strong>. A soma define a sala. O dado mais alto define como o grupo entra nela, e o efeito muda com o patamar:</p>
+      <p>Role 2d12, um como <strong class="t-esp">dado de Esperança</strong> e outro como <strong class="t-medo">dado de Medo</strong>. A soma define a sala. O dado mais alto define como o grupo entra nela, e o efeito muda com o patamar:</p>
       <ul>
-        <li><strong class="t-esp">Esperança maior</strong> (47,5%): a sala favorece o grupo.</li>
-        <li><strong class="t-medo">Medo maior</strong> (47,5%): a sala favorece o mestre.</li>
-        <li><strong>Dados iguais</strong> (5%): crítico.</li>
+        <li><strong class="t-esp">Esperança maior</strong> (45,8%): a sala favorece o grupo.</li>
+        <li><strong class="t-medo">Medo maior</strong> (45,8%): a sala favorece o mestre.</li>
+        <li><strong>Dados iguais</strong> (8,3%): crítico.</li>
       </ul>
       <p class="dica">Os textos abaixo são uma regra da casa; edite à vontade. Orçamento de combate, Dificuldade, dano e limiares seguem o livro básico.</p>
     </div>
@@ -134,7 +134,7 @@
           <option value="lista">Na ordem do cadastro</option>
         </select>
       </label>
-      <p class="dica">Em 2d20 as somas do meio (perto de 21) saem muito mais que as das pontas. Deixar os raros nas pontas é o que mais aproxima a chance real do peso pedido.</p>
+      <p class="dica">Em 2d12 as somas do meio (perto de 13) saem muito mais que as das pontas. Deixar os raros nas pontas é o que mais aproxima a chance real do peso pedido.</p>
     </div>
   </section>
 
@@ -144,7 +144,7 @@
       <h2>Macro para o Foundry</h2>
       <ol>
         <li>No Foundry, crie uma macro do tipo <strong>Script</strong> e cole o código abaixo.</li>
-        <li>Execute como mestre. Ela cria uma Tabela de Rolagem <code>2d20</code> por patamar na pasta “Salas de Encontro” e a macro <strong>Rolar Sala de Encontro</strong>.</li>
+        <li>Execute como mestre. Ela cria uma Tabela de Rolagem <code>2d12</code> por patamar na pasta “Salas de Encontro” e a macro <strong>Rolar Sala de Encontro</strong>.</li>
         <li>Use a macro criada para rolar: ela mostra a sala e o efeito de Esperança/Medo no chat.</li>
       </ol>
       <p class="dica">Executar de novo substitui as tabelas de mesmo nome dentro dessa pasta.</p>

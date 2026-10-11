@@ -4,7 +4,7 @@
   const CHAVE = 'dh-salas-v1';
   const TIPOS = ['Combate', 'Exploração', 'Travessia', 'Social', 'Evento', 'Tesouro', 'Descanso'];
   const PATAMARES = [1, 2, 3, 4];
-  const SOMA_MIN = 2, SOMA_MAX = 40, COMBOS = 400;
+  const SOMA_MIN = 2, LADOS = 12, SOMA_MAX = 2 * LADOS, COMBOS = LADOS * LADOS;
 
   // Estatísticas improvisadas por patamar (livro básico, cap. 4).
   const REF = {
@@ -74,9 +74,9 @@
     renderTudo();
   }
 
-  // ---------- Distribuição das faixas em 2d20 ----------
+  // ---------- Distribuição das faixas em 2d12 ----------
 
-  const combosDaSoma = (s) => (s <= 21 ? s - 1 : 41 - s);
+  const combosDaSoma = (s) => (s <= LADOS + 1 ? s - 1 : 2 * LADOS + 1 - s);
 
   function ordenar(itens, ordem) {
     if (ordem === 'lista') return itens.slice();
@@ -87,13 +87,13 @@
     return esq.concat(dir.reverse());
   }
 
-  // Divide as somas 2..40 em faixas contíguas, uma por encontro, minimizando
+  // Divide as somas 2..24 em faixas contíguas, uma por encontro, minimizando
   // o erro quadrático entre a chance real e o peso pedido.
   function distribuir(patamar) {
     const itens = estado.encontros.filter((e) => e.patamares.includes(patamar) && e.peso > 0);
     const n = itens.length, m = SOMA_MAX - SOMA_MIN + 1;
     if (!n) return { linhas: [], erro: 'Nenhum encontro com peso maior que zero neste patamar.' };
-    if (n > m) return { linhas: [], erro: `São ${n} encontros, mas 2d20 só tem ${m} somas possíveis. Remova ou zere o peso de ${n - m}.` };
+    if (n > m) return { linhas: [], erro: `São ${n} encontros, mas 2d12 só tem ${m} somas possíveis. Remova ou zere o peso de ${n - m}.` };
 
     const ord = ordenar(itens, estado.ordem);
     const total = ord.reduce((s, e) => s + e.peso, 0);
@@ -185,7 +185,7 @@
   function lerDados() {
     const v = (id) => {
       const n = parseInt($(id).value, 10);
-      return n >= 1 && n <= 20 ? n : null;
+      return n >= 1 && n <= LADOS ? n : null;
     };
     const esp = v('#d-esp'), medo = v('#d-medo');
     ultimaRolagem = esp && medo ? { esp, medo } : null;
@@ -201,7 +201,7 @@
     const lista = estado.encontros.filter((e) => !filtro || e.patamares.includes(filtro));
 
     $('#lista-enc thead').innerHTML = `<tr><th>Encontro</th><th>Tipo</th><th>Patamares</th><th class="num">Peso</th>${
-      filtro ? '<th class="num">Pedido</th><th class="num">Real</th><th>2d20</th>' : ''}<th></th></tr>`;
+      filtro ? '<th class="num">Pedido</th><th class="num">Real</th><th>2d12</th>' : ''}<th></th></tr>`;
     $('#lista-enc tbody').innerHTML = lista.map((e) => {
       const l = porId.get(e.id);
       const extra = filtro
@@ -310,7 +310,7 @@
       await RollTable.create({
         name: t.nome,
         description: t.descricao,
-        formula: '2d20',
+        formula: '2d12',
         replacement: true,
         displayRoll: true,
         folder: pasta.id,
@@ -322,7 +322,7 @@
     }
     const existente = game.macros.find((m) => m.name === DADOS.macro.nome && m.isOwner);
     if (existente) await existente.update({ command: DADOS.macro.comando });
-    else await Macro.create({ name: DADOS.macro.nome, type: 'script', command: DADOS.macro.comando, img: 'icons/svg/d20-grey.svg' });
+    else await Macro.create({ name: DADOS.macro.nome, type: 'script', command: DADOS.macro.comando, img: 'icons/svg/d12-grey.svg' });
     ui.notifications.info(DADOS.tabelas.length + ' tabela(s) criadas na pasta "' + DADOS.pasta + '". Use a macro "' + DADOS.macro.nome + '" para rolar.');
   }
 
@@ -353,7 +353,7 @@
     const tabela = game.tables.getName(cfg.nome);
     if (!tabela) return ui.notifications.warn('Tabela "' + cfg.nome + '" não encontrada. Rode a macro de criação primeiro.');
 
-    const rolagem = await new Roll('1d20[Esperança] + 1d20[Medo]').evaluate();
+    const rolagem = await new Roll('1d12[Esperança] + 1d12[Medo]').evaluate();
     const [esp, medo] = rolagem.dice.map((d) => d.total);
     const res = tabela.getResultsForRoll(rolagem.total)[0];
     const sala = res
@@ -385,7 +385,7 @@
       const r = REF[p];
       tabelas.push({
         nome,
-        descricao: `<p>Role 2d20 (um de Esperança, um de Medo). Dificuldade ${r.dif} · dano ${esc(r.dano)} · limiares ${esc(r.limiares)}.</p>`
+        descricao: `<p>Role 2d12 (um de Esperança, um de Medo). Dificuldade ${r.dif} · dano ${esc(r.dano)} · limiares ${esc(r.limiares)}.</p>`
           + `<p><strong>Esperança maior:</strong> ${esc(regras.esperanca)}</p>`
           + `<p><strong>Medo maior:</strong> ${esc(regras.medo)}</p>`
           + `<p><strong>Dados iguais:</strong> ${esc(regras.critico)}</p>`,
@@ -403,7 +403,7 @@
     const cfg = { titulo: 'Sala de Encontro', sussurrar: $('#x-sussurro').checked, tabelas: cfgTabelas };
     const comandoRolar = `// Salas de Encontro — rolagem\nconst CFG = ${JSON.stringify(cfg)};\nawait (${macroRolar.toString()})(CFG);\n`;
     const dados = { pasta: 'Salas de Encontro', tabelas, macro: { nome: 'Rolar Sala de Encontro', comando: comandoRolar } };
-    $('#macro').value = `// Salas de Encontro (Daggerheart) — cria as tabelas de rolagem 2d20 e a macro de rolagem.\n`
+    $('#macro').value = `// Salas de Encontro (Daggerheart) — cria as tabelas de rolagem 2d12 e a macro de rolagem.\n`
       + `// Gerado em ${new Date().toLocaleDateString('pt-BR')}.\n`
       + `const DADOS = ${JSON.stringify(dados, null, 1)};\n\nawait (${macroCriar.toString()})(DADOS);\n`;
   }
@@ -488,9 +488,9 @@
     });
     $('#imprimir').addEventListener('click', () => window.print());
     $('#rolar').addEventListener('click', () => {
-      const d20 = () => 1 + Math.floor(Math.random() * 20);
-      $('#d-esp').value = d20();
-      $('#d-medo').value = d20();
+      const d12 = () => 1 + Math.floor(Math.random() * LADOS);
+      $('#d-esp').value = d12();
+      $('#d-medo').value = d12();
       lerDados();
     });
     $('#d-esp').addEventListener('input', lerDados);
